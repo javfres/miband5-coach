@@ -93,14 +93,14 @@ export default class HeartLevelVue extends Vue {
         align-items: start;
 
         .wrapper {
-            margin: 10px;
-            background-color: rgba(255, 255, 255, 0.562);
+            margin-left: 50px;
+            background-color: rgba(255, 255, 255, 0.342);
             border-radius: $level_width/2;
         }
 
         .widget{
 
-            margin: 10px;
+            margin: 2px;
             height: 60vh;
             width: $level_width;
             position: relative;
@@ -117,6 +117,9 @@ export default class HeartLevelVue extends Vue {
                     border-radius:  0 0 $level_width/2 $level_width/2;
                 }
 
+                filter: drop-shadow( 0 0 10px rgba(255, 255, 255, 0.192));
+
+
             }
 
             .marker {
@@ -129,12 +132,15 @@ export default class HeartLevelVue extends Vue {
                     transform: translateY(-50%);
                     display: flex;
                     flex-direction: row;
-                      align-content: space-between;
+                    align-content: space-between;
 
+                    font-size: 20px;
+                    text-shadow: 0 0 4px rgba(255, 255, 255, 0.445);
 
                     img {
                         width: 30px;
                         margin-right: 10px;
+                        filter: drop-shadow( 0 0 4px rgba(255, 255, 255, 0.192));
                     }
                 }
 

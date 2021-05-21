@@ -291,7 +291,7 @@ export default class MiBand5 {
 
         //console.log('sendNotification', {message});
 
-        //const buffer = str2buf(type + message);
+        const buffer = str2buf(type + message);
 
         /*
         const msg = NOTIFICATION_TYPES.msg + 'aóz' + '\xb1';

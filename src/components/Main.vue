@@ -3,38 +3,45 @@
 
 
 <template>
-    <div
-        class="fullscreen"
-        :style="`background-color:${color}`"
-    >
+    <div class="fullscreen">
 
-        <HeartLevelVue v-if="levels" :levels="levels" :current="monitor.bpm" />
+        <BackgroundVue
+            :levels="levels"
+            :monitor="monitor"
+        />
 
-        <div>
+        <ConfigVue
+            v-if="!started"
+            @start="start"
+        />
 
-            <h1> MiBand5 Coach </h1>
+        <template v-if="started">
 
-            <div>
-                AuthKey <input type="text" v-model="auth_key" >
-            </div>
-            <div>
-                Minutes <input type="number" v-model="minutes" >
-            </div>
-            <div>
-                AVG Rate <input type="number" v-model="avg_rate" >
-            </div>
-            <div>
-                <button @click="start">Start</button>
-            </div>
+            <CenterVue
+                :levels="levels"
+                :monitor="monitor"
+            />
 
-        </div>
+            <HeartLevelVue
+                :levels="levels"
+                :current="monitor.bpm"
+            />
 
-
-        <div class="heart" :class="{active: monitor.active}">
-           <div class="bpm">BPM</div> {{ monitor.bpm }}
-        </div>
+            <TimerVue
+                :levels="levels"
+                :monitor="monitor"
+            />
 
 
+
+        </template>
+
+            <ChartVue
+                :levels="levels"
+                :monitor="monitor"
+            />
+
+    
     </div>
 </template>
 
@@ -46,44 +53,49 @@
 
 import Levels from '@/ts/Levels';
 import Monitor from '@/ts/Monitor';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
+
+
+import { ConfigT } from '@/ts/types';
+
 
 import HeartLevelVue from './HeartLevel.vue'
-
+import ConfigVue from './Config.vue'
+import CenterVue from './Center.vue'
+import TimerVue from './Timer.vue'
+import BackgroundVue from './Background.vue'
+import ChartVue from './Chart.vue'
 
 @Component({
     components: {
-        HeartLevelVue
+        HeartLevelVue,
+        ConfigVue,
+        CenterVue,
+        TimerVue,
+        BackgroundVue,
+        ChartVue,
     }
 })
 export default class MainVue extends Vue {
 
 
-    minutes = 60;
-    avg_rate = 140;
-    auth_key = '405d64f03666539980628dc4f4fa22b9';
+    started = false;
+
 
     monitor: Monitor = new Monitor();
-
     levels: Levels|null = null; 
 
 
-    start(): void {
-
-        console.log("Start");
-        this.monitor.start(this.auth_key);
-
-        this.levels = new Levels(50, 200, this.avg_rate);
-
-    }
 
 
-    get color(): string {
 
-        if(!this.levels) return 'white';
-        const level = this.levels.in(this.monitor.bpm);
+    start(config: ConfigT): void {
 
-        return level.color;
+        console.log("Start", config);
+        this.monitor.start(config.auth_key);
+        this.levels = new Levels(50, 200, config.target_rate);
+
+        this.started = true;
 
     }
 
@@ -96,44 +108,6 @@ export default class MainVue extends Vue {
 
 
 <style scoped lang="scss">
-
-
-
-@keyframes heartbeat {
-  0%  { transform: scale( .75 ); }
-  20% { transform: scale( 1   ); }
-  40% { transform: scale( .75 ); }
-  60% { transform: scale( 1   ); }
-  80% { transform: scale( .75 ); }
-  100%{ transform: scale( .75 ); }
-}
-
-
-.heart {
-
-    font-size: min(20vw, 20vh);
-    position: relative;
-
-    .bpm {
-        font-size: min(2vw, 2vh);
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        text-align: center;
-    }
-
-    &.active {
-        //background-color: red;
-        width: 50px;
-        height: 50px;
-        animation: heartbeat 1s infinite;
-    }
-
-
-}
-
-
-
 
 
 
