@@ -15,6 +15,9 @@
             <h1> MiBand5 Coach </h1>
 
             <div>
+                AuthKey <input type="text" v-model="auth_key" >
+            </div>
+            <div>
                 Minutes <input type="number" v-model="minutes" >
             </div>
             <div>
@@ -57,7 +60,8 @@ export default class MainVue extends Vue {
 
 
     minutes = 60;
-    avg_rate = 130;
+    avg_rate = 140;
+    auth_key = '405d64f03666539980628dc4f4fa22b9';
 
     monitor: Monitor = new Monitor();
 
@@ -67,11 +71,9 @@ export default class MainVue extends Vue {
     start(): void {
 
         console.log("Start");
-        //this.monitor.test_random();
-        this.monitor.start('405d64f03666539980628dc4f4fa22b9');
+        this.monitor.start(this.auth_key);
 
         this.levels = new Levels(50, 200, this.avg_rate);
-
 
     }
 

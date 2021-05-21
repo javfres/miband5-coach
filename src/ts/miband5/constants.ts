@@ -49,4 +49,5 @@ export const NOTIFICATION_TYPES = {
     sms: '\x05\x01',
 }
 
+
 export const ADVERTISEMENT_SERVICE = 0xFEE0;

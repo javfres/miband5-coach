@@ -13,8 +13,10 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "webpack-env",
+      "@types/web-bluetooth"
     ],
+    "typeRoots": ["./node_modules/@types"],
     "paths": {
       "@/*": [
         "src/*"

@@ -1,11 +1,9 @@
-import mix from 'mix-color';
 
 
 
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import Band5 from '@/jaapp_miband/miband';
+import Band5 from '@/ts/miband5/MiBand5';
+
 import sleep from '@/utils/sleep';
 
 export default class Monitor {
@@ -22,42 +20,26 @@ export default class Monitor {
     }
 
 
-
-    /*
-    async test_random(): Promise<void>{
-
-
-        // eslint-disable-next-line no-constant-condition
-        while(true){
-
-            await sleep(random(100,500));
-
-            this.update(random(80,100));
-
-        }
-
-
-    }
-    */
-
-
     band5!: Band5; 
 
-    async start(token: string){
+    async start(token: string): Promise<void> {
 
 
         this.band5 = new Band5(token);
         this.band5.onHeartRate((n:number) => this.update(n));
         await this.band5.init();
 
-        // this.band5.sendNotification('Hola');
+        await this.band5.getBatteryInfo();
 
-        this.notifyGoFaster();
+        this.band5.sendNotification('Hola? Jó');
+
+        // this.notifyGoFaster();
 
     }
 
 
-    async notifyGoFaster(){
+    /*
+    async notifyGoFaster(): Promise<void> {
 
 
         for(;;){
@@ -71,6 +53,7 @@ export default class Monitor {
 
     }
 
+    */
 
 
 
