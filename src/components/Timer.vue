@@ -25,6 +25,8 @@ import Monitor from '@/ts/Monitor';
 
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
+import { diffS } from '@/utils/time';
+
 
 @Component({
     components: {
@@ -62,14 +64,9 @@ export default class TimerVue extends Vue {
 
         let elapsed = 0;
 
-        if(this.monitor.tstart){
-
-            const time = (new Date).getTime();
-            elapsed = time - this.monitor.tstart;
-
+        if(this.monitor.timeStart){
+            elapsed = diffS(this.monitor.timeStart);
         }
-
-        elapsed /= 1000;
 
         this.time.hours = Math.floor(elapsed / 3600);
         this.time.minutes = Math.floor(elapsed % 3600 / 60);

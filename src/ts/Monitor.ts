@@ -1,10 +1,10 @@
 
 
 
-
 import Band5 from '@/ts/miband5/MiBand5';
+import {randomFloat} from '@/utils/random';
+import { diffS, getS } from '@/utils/time';
 
-import sleep from '@/utils/sleep';
 
 
 export type Point = {
@@ -13,34 +13,36 @@ export type Point = {
 }
 
 
-function getMS(){
-    return (new Date).getTime();
-}
-
-function diffMS(start: number){
-    return getMS() - start;
-}
 
 
 export default class Monitor {
 
 
     bpm = 0;
+    avg_bpm = 0;
     active = false;
-    tstart = 0;
+
+    timeStart = 0;
 
     history: Point[] = [];
 
+    // Last elapsed
+    elast = 0;
 
-    elapsed(){
-        return diffMS(this.tstart);
+    totalBeats = 0;
+
+
+    elapsed(): number {
+        return diffS(this.timeStart);
     }
 
 
     update(bpm: number): void {
 
-        if(!this.tstart){
-            this.tstart = getMS();
+        // bpm = Math.floor(bpm * randomFloat(1.95, 2.05));
+
+        if(!this.timeStart){
+            this.timeStart = getS();
             this.history = [];
         }
 
@@ -53,6 +55,20 @@ export default class Monitor {
             bpm,
         });
 
+        if(elapsed > 0){
+
+            const range = elapsed - this.elast;
+            const beats = (bpm/60) * range;
+
+            this.totalBeats += beats;
+
+            this.avg_bpm = Math.floor((this.totalBeats/elapsed) * 60);
+
+        }
+
+
+        this.elast = elapsed;
+
     }
 
 
@@ -61,7 +77,10 @@ export default class Monitor {
     async start(token: string): Promise<void> {
 
 
-        this.tstart = 0;
+        this.timeStart = 0;
+        this.totalBeats = 0;
+        this.elast = 0;
+
         this.band5 = new Band5(token);
         this.band5.onHeartRate((n:number) => this.update(n));
         await this.band5.init();

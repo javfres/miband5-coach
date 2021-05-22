@@ -32,14 +32,19 @@
                 :monitor="monitor"
             />
 
-
-
-        </template>
-
             <ChartVue
                 :levels="levels"
                 :monitor="monitor"
+                :config="config"
             />
+
+            <StatsVue
+                :levels="levels"
+                :monitor="monitor"
+            />
+
+        </template>
+
 
     
     </div>
@@ -65,6 +70,7 @@ import CenterVue from './Center.vue'
 import TimerVue from './Timer.vue'
 import BackgroundVue from './Background.vue'
 import ChartVue from './Chart.vue'
+import StatsVue from './Stats.vue'
 
 @Component({
     components: {
@@ -74,6 +80,7 @@ import ChartVue from './Chart.vue'
         TimerVue,
         BackgroundVue,
         ChartVue,
+        StatsVue,
     }
 })
 export default class MainVue extends Vue {
@@ -86,12 +93,14 @@ export default class MainVue extends Vue {
     levels: Levels|null = null; 
 
 
-
+    config!: ConfigT;
 
 
     start(config: ConfigT): void {
 
         console.log("Start", config);
+
+        this.config = config;
         this.monitor.start(config.auth_key);
         this.levels = new Levels(50, 200, config.target_rate);
 
