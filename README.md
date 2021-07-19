@@ -1,5 +1,14 @@
 # miband5-coach
 
+This is a web application that connects to a MiBand5
+to show the heart beats during exercise.
+I use it to monitor myself while using a stationary bicy.
+You can set a execise time and a target bps and it
+will show colors.
+
+![Screenshoot](docs/screen02.png)
+
+
 ## Project setup
 ```
 npm install
@@ -24,13 +33,11 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 
-https://github.com/Jaapp-/miband-5-heart-rate-monitor
+### Other repos and utils
 
-
-
-
-http://www.freemyband.com/
-https://geekdoing.com/threads/modified-mi-fit-5-0-2-all-in-one.2882/
+* https://github.com/Jaapp-/miband-5-heart-rate-monitor
+* http://www.freemyband.com/
+* https://geekdoing.com/threads/modified-mi-fit-5-0-2-all-in-one.2882/
 
 
 Information.txt
