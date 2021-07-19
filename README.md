@@ -6,6 +6,11 @@ I use it to monitor myself while using a stationary bicy.
 You can set a execise time and a target bps and it
 will show colors.
 
+This uses vue and typescript.
+It uses the bluetooth api that you will need to enable in the browser.
+Moreover, you need the authkey for the band,
+that can be obtaining with some 3º party app.
+
 ![Screenshoot](docs/screen02.png)
 
 
@@ -35,6 +40,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Other repos and utils
 
+* https://webbluetoothcg.github.io/web-bluetooth/
 * https://github.com/Jaapp-/miband-5-heart-rate-monitor
 * http://www.freemyband.com/
 * https://geekdoing.com/threads/modified-mi-fit-5-0-2-all-in-one.2882/
