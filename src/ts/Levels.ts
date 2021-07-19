@@ -36,6 +36,14 @@ export default class Levels {
 
     constructor(min: number, max: number, target: number, size = 10){
 
+        const margin = ( (7/2) * size );
+        if(((target-margin) < min) || ((target+margin) > max)){
+            console.warn("Outside min - max");
+
+            target = Math.min(target, max-margin);
+            target = Math.max(target, min+margin);
+
+        }
 
         this.min = min;
         this.max = max;

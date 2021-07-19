@@ -5,7 +5,12 @@
 <template>
     <div class="fullscreen">
 
-        <div class="heart" :class="{active: monitor.active}">
+        <div v-if="!monitor.bpm">
+            <LoaderVue v-if="!monitor.bpm" />
+            <p class="connecting"> Connecting... </p>
+        </div>
+
+        <div v-else class="heart" :class="{active: monitor.active}">
            {{ monitor.bpm }}
         </div>
 
@@ -22,10 +27,13 @@ import Levels from '@/ts/Levels';
 import Monitor from '@/ts/Monitor';
 
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import LoaderVue from './Loader.vue';
+
 
 
 @Component({
     components: {
+        LoaderVue
     }
 })
 export default class CenterVue extends Vue {
@@ -72,7 +80,9 @@ export default class CenterVue extends Vue {
 
 }
 
-
+.connecting {
+    color: rgba(255, 255, 255, 0.445);
+}
 
 
 </style>

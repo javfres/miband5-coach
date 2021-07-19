@@ -13,10 +13,10 @@
             AuthKey <input type="text" v-model="config.auth_key" >
         </div>
         <div>
-            Minutes <input type="number" v-model="config.minutes" >
+            Minutes <input type="number" v-model.number="config.minutes" >
         </div>
         <div>
-            AVG Rate <input type="number" v-model="config.target_rate" >
+            AVG Rate <input type="number" v-model.number="config.target_rate" >
         </div>
         <div>
             <button @click="start">Start</button>
@@ -39,7 +39,7 @@ export default class ConfigVue extends Vue {
 
     config: ConfigT = {
         minutes: 60,
-        target_rate: 140,
+        target_rate: 130,
         auth_key: '405d64f03666539980628dc4f4fa22b9',
     }
 

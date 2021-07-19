@@ -1,7 +1,4 @@
 
-
-
-
 <template>
     <div class="fullscreen">
 
@@ -14,25 +11,14 @@
     </div>
 </template>
 
-
-
-
 <script lang="ts">
 
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import * as d3 from "d3";
 
 import Levels from '@/ts/Levels';
 import Monitor, {Point} from '@/ts/Monitor';
-
-import { Component, Prop, Vue } from 'vue-property-decorator';
-
-import * as d3 from "d3";
 import { ConfigT } from '@/ts/types';
-
-
-let x: any;
-let y: any;
-const xfn = (p: Point) => x(p.time);
-const yfn = (p: Point) => y(p.bpm);
 
 
 @Component
@@ -47,47 +33,63 @@ export default class TimerVue extends Vue {
     @Prop()
     config!: ConfigT;
 
+    // D3 elements
+    svg!: d3.Selection<SVGSVGElement, unknown, null, undefined>;
+    line!: d3.Line<Point>;
+    area!: d3.Area<Point>;
+    x!: d3.ScaleLinear<number, number>;
+    y!: d3.ScaleLinear<number, number>;
 
-    svg!: any;
-    line!: any;
-    area!: any;
+    xfn(p: Point): number { 
+        return this.x(p.time);
+    } 
 
-    mounted(){
+    yfn(p: Point): number {
+        return this.y(p.bpm);
+    }
+
+    mounted(): void{
+
+        this.buildSVG();
+
+        // Update the plot 
+        setInterval(() => {
+            this.update();
+        }, 4000);
+
+    }
+
+    buildSVG(): void {
 
         const width = 512;
         const height = 125;
 
         const elem = this.$refs['chart'] as Element;
 
+        // The main SVG Element
         this.svg = d3
             .select(elem)
             .append("svg")
             .attr("viewBox", `0 0 ${width} ${height}`)
             .attr("width", '80%')
-            //.attr("height", height);
 
         const seconds = this.config.minutes * 60;
 
-
-        x = d3.scaleLinear()
+        // Scales for X and Y
+        this.x = d3.scaleLinear()
             .domain([0, seconds])
             .range([0, width]);
 
-
-        //svg.append("g")
-        //    .attr("transform", "translate(0," + height + ")")
-        //    .call(d3.axisBottom(x));
-
-        y = d3.scaleLinear()
+        this.y = d3.scaleLinear()
             .range([height, 0])
             .domain([40, 200]);
 
-
+        // The gradient for the area
         this.svg.append("linearGradient")
             .attr("id", "my-gradient")
             .attr("gradientUnits", "userSpaceOnUse")
-            .attr("x1", 0).attr("y1", y(0))
-            .attr("x2", 0).attr("y2", y(this.config.target_rate))
+            .attr("x1", 0).attr("y1", height)
+            .attr("x2", 0).attr("y2", this.y(this.levels.target))
             .selectAll("stop")
             .data([
                 {offset: "0%", color: "white", opacity:0},
@@ -95,18 +97,16 @@ export default class TimerVue extends Vue {
             ])
             .enter()
             .append("stop")
-            .attr("offset", (d:any) => d.offset)
-            .attr("stop-color", (d:any) => d.color)
-            .attr("stop-opacity", (d:any) => d.opacity);
-
-
+            .attr("offset", d => d.offset)
+            .attr("stop-color", d => d.color)
+            .attr("stop-opacity", d => d.opacity);
 
         // define the area
-        this.area = d3.area()
+        this.area = d3.area<Point>()
             .curve(d3.curveBasis)
             .y0(height)
-            .x(xfn)
-            .y1(yfn)
+            .x(this.xfn)
+            .y1(this.yfn)
 
         // add the area
         this.svg.append("path")
@@ -114,101 +114,71 @@ export default class TimerVue extends Vue {
             .attr("class", "area")
             .attr("d", this.area);
 
-
+        // Add two lines for the targets
+        this.svg.append('line')
+            .attr("class", "linetarget2")
+            .attr("x1", 0)
+            .attr("y1", this.y(this.levels.target-10))
+            .attr("x2", width)
+            .attr("y2", this.y(this.levels.target-10)); 
 
         this.svg.append('line')
             .attr("class", "linetarget2")
             .attr("x1", 0)
-            .attr("y1", y(this.config.target_rate-10))
+            .attr("y1", this.y(this.levels.target+10))
             .attr("x2", width)
-            .attr("y2", y(this.config.target_rate-10)); 
-
-        this.svg.append('line')
-            .attr("class", "linetarget2")
-            .attr("x1", 0)
-            .attr("y1", y(this.config.target_rate+10))
-            .attr("x2", width)
-            .attr("y2", y(this.config.target_rate+10)); 
+            .attr("y2", this.y(this.levels.target+10)); 
 
         
+        // Add the avg line
         this.svg.append('line')
             .attr("class", "lineavg")
             .attr("x1", 0)
-            .attr("y1", y(this.monitor.avg_bpm))
+            .attr("y1", this.y(this.monitor.avg_bpm))
             .attr("x2", width)
-            .attr("y2", y(this.monitor.avg_bpm)); 
-
-
+            .attr("y2", this.y(this.monitor.avg_bpm)); 
 
         // define the line
-        this.line = d3.line()
+        this.line = d3.line<Point>()
             .curve(d3.curveBasis)
-            .x(xfn)
-            .y(yfn)
+            .x(this.xfn)
+            .y(this.yfn)
 
         this.svg.append("path")
             .attr("class", "line")
             .datum(this.monitor.history)
             .attr("d",  this.line);
 
-
-
-        /*
-        this.svg.append('line')
-            .attr("class", "linetarget")
-            .attr("x1", 0)
-            .attr("y1", y(this.config.target_rate))
-            .attr("x2", width)
-            .attr("y2", y(this.config.target_rate)); 
-        */
-
-
-
-
-
-        setInterval(() => {
-            this.update();
-        },4000);
-
     }
 
 
-    update(){
+    update(): void{
 
         this.svg.select(".area")
             .datum(this.monitor.history)
             .attr("d", this.area);
 
-
         this.svg.select(".line")
             .datum(this.monitor.history)
             .attr("d", this.line);
 
-
         this.svg.select('.lineavg')
-            .attr("x1", x(this.monitor.elast))
-            .attr("y1", y(this.monitor.avg_bpm))
-            .attr("y2", y(this.monitor.avg_bpm)); 
-
+            .attr("x1", this.x(this.monitor.elast))
+            .attr("y1", this.y(this.monitor.avg_bpm))
+            .attr("y2", this.y(this.monitor.avg_bpm)); 
 
     }
-
-
 
 }
 
 </script>
 
 
-
-
 <style scoped lang="scss">
-
 
     .fullscreen {
         justify-content: flex-end;
     }
-
 
     .chart {
 
@@ -247,22 +217,11 @@ export default class TimerVue extends Vue {
                 stroke-dasharray: 4, 10;
             }
 
-
             .area {
-                //fill: rgba(255, 255, 255, 0.233);
                 fill: url(#my-gradient);
             }
 
-
         }
-
-
-
-
     }
-
-
-
-
 
 </style>
